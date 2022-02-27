@@ -3,21 +3,17 @@
 # Author: Tom Alexa
 
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5 import QtWidgets
+from src.window import Ui_MainWindow
 
 
 def main():
-    app = QApplication(sys.argv)
-    win = QMainWindow()
-
-    width, height = 600, 500
-    win.setFixedWidth(width)
-    win.setFixedHeight(height)
-    win.setWindowTitle("Todo list")
-
-    win.show()
+    app = QtWidgets.QApplication(sys.argv)
+    window = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(window)
+    window.show()
     sys.exit(app.exec_())
-
 
 if __name__ == "__main__":
     main()
