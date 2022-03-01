@@ -1,6 +1,7 @@
 
 from datetime import date, timedelta
 from PyQt5 import QtCore, QtGui, QtWidgets
+from src.database.database import select_items, insert_item
 
 
 class Ui_MainWindow(object):
@@ -87,20 +88,19 @@ class Ui_MainWindow(object):
 "border-radius: 20px;")
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
-        self.listWidget = QtWidgets.QListWidget(self.widget)
-        self.listWidget.setGeometry(QtCore.QRect(40, 60, 390, 370))
-        self.listWidget.setStyleSheet("background-color: rgb(96, 54, 1);\n"
-"border-radius: 20px;")
-        self.listWidget.setObjectName("listWidget")
+        self.list_of_items = QtWidgets.QListWidget(self.widget)
+        self.list_of_items.setGeometry(QtCore.QRect(40, 60, 390, 370))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.list_of_items.setFont(font)
+        self.list_of_items.setStyleSheet("background-color: rgb(96, 54, 1);\n"
+"border-radius: 10px;\n"
+"padding: 20px")
+        self.list_of_items.setObjectName("list_of_items")
         self.widget_2 = QtWidgets.QWidget(self.centralwidget)
         self.widget_2.setGeometry(QtCore.QRect(470, 100, 320, 470))
         self.widget_2.setStyleSheet("background-color: rgb(54, 21, 0);")
         self.widget_2.setObjectName("widget_2")
-        self.listWidget_2 = QtWidgets.QListWidget(self.widget_2)
-        self.listWidget_2.setGeometry(QtCore.QRect(20, 60, 280, 370))
-        self.listWidget_2.setStyleSheet("background-color: rgb(96, 54, 1);\n"
-"border-radius: 20px;")
-        self.listWidget_2.setObjectName("listWidget_2")
         self.label_2 = QtWidgets.QLabel(self.widget_2)
         self.label_2.setGeometry(QtCore.QRect(20, 10, 280, 40))
         font = QtGui.QFont()
@@ -111,6 +111,67 @@ class Ui_MainWindow(object):
 "border-radius: 20px;")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
+        self.add_item_widget = QtWidgets.QWidget(self.widget_2)
+        self.add_item_widget.setGeometry(QtCore.QRect(20, 60, 280, 370))
+        self.add_item_widget.setStyleSheet("background-color: rgb(96, 54, 1);\n"
+"border-radius: 10px;")
+        self.add_item_widget.setObjectName("add_item_widget")
+        self.label_3 = QtWidgets.QLabel(self.add_item_widget)
+        self.label_3.setGeometry(QtCore.QRect(20, 30, 100, 40))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setUnderline(False)
+        font.setWeight(50)
+        self.label_3.setFont(font)
+        self.label_3.setStyleSheet("background-color: rgb(204, 149, 68);")
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setObjectName("label_3")
+        self.label_6 = QtWidgets.QLabel(self.add_item_widget)
+        self.label_6.setGeometry(QtCore.QRect(20, 100, 100, 40))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setUnderline(False)
+        font.setWeight(50)
+        self.label_6.setFont(font)
+        self.label_6.setStyleSheet("background-color: rgb(204, 149, 68);")
+        self.label_6.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_6.setObjectName("label_6")
+        self.label_7 = QtWidgets.QLabel(self.add_item_widget)
+        self.label_7.setGeometry(QtCore.QRect(20, 150, 120, 40))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setUnderline(False)
+        font.setWeight(50)
+        self.label_7.setFont(font)
+        self.label_7.setStyleSheet("background-color: rgb(204, 149, 68);")
+        self.label_7.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_7.setObjectName("label_7")
+        self.lineEdit = QtWidgets.QLineEdit(self.add_item_widget)
+        self.lineEdit.setGeometry(QtCore.QRect(140, 100, 121, 41))
+        self.lineEdit.setStyleSheet("background-color: rgb(204, 149, 68);")
+        self.lineEdit.setObjectName("lineEdit")
+        self.textEdit = QtWidgets.QTextEdit(self.add_item_widget)
+        self.textEdit.setGeometry(QtCore.QRect(20, 200, 241, 81))
+        self.textEdit.setStyleSheet("background-color: rgb(204, 149, 68);")
+        self.textEdit.setObjectName("textEdit")
+        self.add_button = QtWidgets.QPushButton(self.add_item_widget)
+        self.add_button.setGeometry(QtCore.QRect(210, 300, 51, 51))
+        self.add_button.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(115, 210, 22);\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(78, 154, 6)\n"
+"}")
+        self.add_button.setObjectName("pushButton")
+        self.dateEdit = QtWidgets.QDateEdit(self.add_item_widget)
+        self.dateEdit.setGeometry(QtCore.QRect(140, 30, 121, 41))
+        self.dateEdit.setStyleSheet("background-color: rgb(204, 149, 68);")
+        self.dateEdit.setAlignment(QtCore.Qt.AlignCenter)
+        self.dateEdit.setObjectName("dateEdit")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
@@ -121,11 +182,23 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.active_day = date.today()
+
         self.retranslateUi(MainWindow)
+        self.load_items()
+        self.connect_buttons()
+        self.set_input_values()
+        
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
 
     def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "Todo list"))
+        self.translate_buttons()
+        self.translate_add()
+
+
+    def translate_buttons(self):
         _translate = QtCore.QCoreApplication.translate
 
         day_1 = date.today() - timedelta(days=2)
@@ -137,7 +210,6 @@ class Ui_MainWindow(object):
         day_7 = date.today() + timedelta(days=4)
         day_8 = date.today() + timedelta(days=5)
 
-        MainWindow.setWindowTitle(_translate("MainWindow", "Todo list"))
         day, month = day_1.day, day_1.month
         self.day_1.setText(_translate("MainWindow", f"{day}.{month}."))
         day, month = day_2.day, day_2.month
@@ -159,3 +231,59 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", f"{day}.{month}.{year}"))
         self.label_2.setText(_translate("MainWindow", "Add"))
 
+
+    def translate_add(self):
+        _translate = QtCore.QCoreApplication.translate
+
+        self.label.setText(_translate("MainWindow", "1.1.2022"))
+        self.label_2.setText(_translate("MainWindow", "Add"))
+        self.label_3.setText(_translate("MainWindow", "Date"))
+        self.label_6.setText(_translate("MainWindow", "Title"))
+        self.label_7.setText(_translate("MainWindow", "Description"))
+        self.add_button.setText(_translate("MainWindow", "Add"))
+
+
+    def set_input_values(self):
+        self.lineEdit.clear()
+        self.textEdit.clear()
+        self.dateEdit.setDate(self.active_day)
+
+
+    def load_items(self):
+        items = select_items(self.active_day)
+        self.list_of_items.clear()
+        for item in items:
+            list_item = QtWidgets.QListWidgetItem(self.list_of_items)
+            text_to_view = "{}\n    {}".format(item[3], item[4].replace("\n", "\n    "))
+            list_item.setText(text_to_view)
+
+
+    def connect_buttons(self):
+        self.day_1.clicked.connect(lambda: self.set_active_day(-2))
+        self.day_2.clicked.connect(lambda: self.set_active_day(-1))
+        self.day_3.clicked.connect(lambda: self.set_active_day(0))
+        self.day_4.clicked.connect(lambda: self.set_active_day(1))
+        self.day_5.clicked.connect(lambda: self.set_active_day(2))
+        self.day_6.clicked.connect(lambda: self.set_active_day(3))
+        self.day_7.clicked.connect(lambda: self.set_active_day(4))
+        self.day_8.clicked.connect(lambda: self.set_active_day(5))
+
+        self.add_button.clicked.connect(lambda: self.add_item(self.lineEdit.text(), self.textEdit.toPlainText(), self.dateEdit.text()))
+
+
+    def set_active_day(self, diff):
+        self.active_day = date.today() + timedelta(diff)
+        self.translate_buttons()
+        self.load_items()
+
+
+    def add_item(self, title, description, in_date):
+        self.set_input_values()
+        if not title:
+            return
+        d = in_date.split("/")
+        year = d[2]
+        month = d[1]
+        day = d[0]
+        insert_item(title, description, f"{year}-{month}-{day}")
+        self.load_items()
