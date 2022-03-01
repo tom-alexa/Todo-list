@@ -2,6 +2,7 @@
 
 ## Virtual environment
 
+In project directory
 - Create
     ```
     virtualenv env
@@ -19,3 +20,15 @@
     ```
     pip intall -r requirements.txt
     ```
+
+
+## Start
+
+In project directory
+```
+python main.py
+```
+
+## Visual
+
+![main screen](project/images/main_screen.png)

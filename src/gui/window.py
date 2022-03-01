@@ -235,7 +235,6 @@ class Ui_MainWindow(object):
     def translate_add(self):
         _translate = QtCore.QCoreApplication.translate
 
-        self.label.setText(_translate("MainWindow", "1.1.2022"))
         self.label_2.setText(_translate("MainWindow", "Add"))
         self.label_3.setText(_translate("MainWindow", "Date"))
         self.label_6.setText(_translate("MainWindow", "Title"))
